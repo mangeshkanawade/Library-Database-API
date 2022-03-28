@@ -7,28 +7,7 @@ using System.Web.Http;
 
 namespace Library_Database_API.Controllers {
     public class BooksController : ApiController {
-        [HttpGet]
-        public HttpResponseMessage BooksList() {
-            HttpResponseMessage result = null;
-            try {
-                Books books = new Books();
-                BooksViewModel viewModel = new BooksViewModel();
-                viewModel.BooksList = books.GetList();
-                viewModel.TotalRecords = books.TotalRecords;
-
-                if (books.GetList() != null) {
-                    result = Request.CreateResponse(HttpStatusCode.Created, viewModel);
-                    ////result = Request.CreateResponse(HttpStatusCode.Created, new { list = ds.Tables[0] });
-                } else {
-                    result = Request.CreateResponse(HttpStatusCode.Created, new List<string>());
-                }
-            } catch (Exception ex) {
-                result = Request.CreateResponse(HttpStatusCode.BadRequest);
-                //Tools.ErrorLogInsert(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name + ".cs", System.Reflection.MethodBase.GetCurrentMethod().Name, ex.Message, DateTime.Now, "");
-            }
-            return result;
-        }
-
+        
         [HttpGet]
         public HttpResponseMessage BooksCategoriesAndPublicationsList() {
             HttpResponseMessage result = null;
@@ -67,6 +46,29 @@ namespace Library_Database_API.Controllers {
                 viewModel.BooksList = books.GetList();
                 viewModel.TotalRecords = books.TotalRecords;
                 result = Request.CreateResponse(HttpStatusCode.Created, viewModel);
+
+            } catch (Exception ex) {
+                result = Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+            return result;
+        }
+
+
+        [HttpPost]
+        public HttpResponseMessage AddBook(BooksViewModel booksViewModel) {
+            HttpResponseMessage result = null;
+
+            try {
+                // For Getting Data From Database according to User need
+
+                Books books = new Books();
+                books.BookName = booksViewModel.BookName;
+                books.BookCategoryId = booksViewModel.BookCategoryId;
+                books.BookPublisherId = booksViewModel.BookPublisherId;
+                books.BookQuantity = booksViewModel.BookQuantity;
+                books.Save();
+                
+                result = Request.CreateResponse(HttpStatusCode.Created, true);
 
             } catch (Exception ex) {
                 result = Request.CreateResponse(HttpStatusCode.BadRequest);
